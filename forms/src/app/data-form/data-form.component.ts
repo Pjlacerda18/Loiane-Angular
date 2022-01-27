@@ -2,6 +2,8 @@ import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import {HttpClient} from '@angular/common/http';
 import { map } from 'rxjs';
+import { DropdownService } from './../shared/services/dropdown.service'
+import { EstadoBr } from '../shared/models/estado-br';
 
 @Component({
   selector: 'app-data-form',
@@ -11,13 +13,19 @@ import { map } from 'rxjs';
 export class DataFormComponent implements OnInit {
 
   formulario: FormGroup | any;
+  controle: any;
+  estados: EstadoBr[] | any;
 
   constructor(
     private formBuilder: FormBuilder,
-    private http: HttpClient
+    private http: HttpClient,
+    private dropdownService: DropdownService
     ) { }
 
   ngOnInit(): void {
+
+    this.dropdownService.getEstadosBr()
+    .subscribe(dados => this.estados = dados)
 
    /* this.formulario = new FormGroup({
       nome: new FormControl(null),
@@ -28,13 +36,19 @@ export class DataFormComponent implements OnInit {
 this.formulario = this.formBuilder.group({
 nome: [null, Validators.required],
 email: [null, [Validators.required, Validators.email]],
-rua: [null, Validators.required],
+
+
+endereco: this.formBuilder.group({
+  rua: [null, Validators.required],
 cep: [null, Validators.required],
 numero:[null, Validators.required],
 complemento: [null],
 bairro: [null, Validators.required],
 cidade: [null, Validators.required],
 estado: [null, Validators.required],
+})
+
+
 });
 
 
@@ -43,21 +57,40 @@ estado: [null, Validators.required],
   onSubmit() {
     console.log(this.formulario);
 
-    this.http.post('https://httpbin.org/post', JSON.stringify(this.formulario.value)).pipe(map(res => res)).subscribe(dados =>{
+    if(this.formulario.valid){
+       this.http.post('https://httpbin.org/post', JSON.stringify(this.formulario.value)).pipe(map(res => res)).subscribe(dados =>{
       console.log(dados);
       //reseta o form
-      this.resetar();
+      //this.resetar();
       },
       (error: any) => alert('erro'))
 
+  } else {
+    console.log('formulario invalido');
+    this.verificaValidacoesForm(this.formulario);
+
+  };
   }
+
+
+verificaValidacoesForm(formGroup: FormGroup){
+   Object.keys(formGroup.controls).forEach(campo =>{
+    console.log(campo);
+    const controle = formGroup.get(campo);
+    this.controle.markAsDirty();
+    if (controle instanceof FormGroup){
+      this.verificaValidacoesForm(controle);
+    }
+   });
+}
+
 
   resetar() {
     this.formulario.reset()
   }
 
    verificaValidTouched(campo: any){
-    return !this.formulario.get(campo).valid && this.formulario.get(campo).touched
+    return !this.formulario.get(campo).valid && (this.formulario.get(campo).touched || this.formulario.get(campo).dirty)
 
   }
 
@@ -76,4 +109,58 @@ estado: [null, Validators.required],
     }
 }
 
+
+consultaCEP(){
+  let cep = this.formulario.get('endereco.cep').value;
+  cep = cep.replace(/\D/g, '');
+
+  if (cep !=null && cep !== ""){
+
+    var validaCep = /^[0-9]{8}$/;
+
+
+     if(validaCep.test(cep)) {
+
+      this.resetaDadosForm();
+
+     this.http.get(`//viacep.com.br/ws/${cep}/json`)
+     .pipe(map(dados => this.consultaCEP())).subscribe(dados => this.populaDadosForm(dados));
+  }
+
 }
+}
+
+
+populaDadosForm(dados: any){
+ this.formulario.patchValue
+
+  this.formulario.form.patchValue({
+     endereco: {
+      rua: dados.logradouro,
+      //cep:dados.cep ,
+      numero:'',
+      compemento: dados.complemento,
+      bairro:dados.bairro,
+      cidade: dados.localidade,
+      estado: dados.uf
+  }
+  });
+
+  this.formulario.get('nome').setValue('Pedro')
+  }
+
+resetaDadosForm(){
+
+   this.formulario.form.patchValue({
+     endereco: {
+      rua: null,
+      compemento: null,
+      bairro:null,
+      cidade: null,
+      estado:null
+  }
+  });
+
+}
+}
+

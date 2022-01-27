@@ -4,6 +4,7 @@ import { FormDebugComponent } from './form-debug/form-debug.component';
 import { CampoControlErrorComponent } from './campo-control-error/campo-control-error.component';
 import { HttpClientModule } from '@angular/common/http';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { DropdownService } from './services/dropdown.service';
 
 
 
@@ -21,6 +22,7 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
   exports: [
     FormDebugComponent,
     CampoControlErrorComponent
-  ]
+  ],
+  providers: [ DropdownService ]
 })
 export class SharedModule { }
