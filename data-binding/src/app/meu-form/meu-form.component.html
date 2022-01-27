@@ -1,0 +1,16 @@
+<section class="two-way-binding">
+    <article>
+        <h3>Two-way data binding</h3>
+        <div>
+
+            <input type="text" [value]="nome" (input)="nome = campinput.value" #campinput>
+
+            <p>Você digitou: {{ nome }}</p>
+            <div></div>
+
+            <p>Meu nome é {{ pessoa.nome}} e tenho {{ pessoa.idade }} anos</p>
+            <input type="text" [(ngModel)]="pessoa.nome">
+            <input type="text" [(ngModel)]="pessoa.idade">
+        </div>
+    </article>
+</section>

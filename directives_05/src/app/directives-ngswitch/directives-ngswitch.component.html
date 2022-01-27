@@ -1,0 +1,19 @@
+<nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <a class="navbar-brand" href="#">Navbar</a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavAltMarkup" aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="navbar-toggler-icon"></span>
+  </button>
+    <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
+        <div class="navbar-nav">
+            <a class="nav-item nav-link active" [class.ative]="aba == 'home'" (click)="aba = 'home'" href=" # ">Home <span class="sr-only ">(current)</span></a>
+            <a class="nav-item nav-link " [class.ative]="aba == 'features'" (click)="aba = 'features'" href="# ">Features</a>
+            <a class="nav-item nav-link " [class.ative]="aba == 'pricing'" (click)="aba = 'pricing'" href="# ">Pricing</a>
+            <a class="nav-item nav-link disabled " [class.ative]="aba == 'disabled'" (click)="aba = 'disabled'" href="# ">Disabled</a>
+        </div>
+    </div>
+</nav>
+<div class="container" [ngSwitch]="aba">
+    <p *ngSwitchCase="'features'">Features ativo</p>
+    <p *ngSwitchCase="'pricing'">Pricing ativo</p>
+    <p *ngSwitchDefault>Home</p>
+</div>
