@@ -27,7 +27,14 @@ export class DataFormComponent implements OnInit {
 
 this.formulario = this.formBuilder.group({
 nome: [null, Validators.required],
-email: [null, [Validators.required, Validators.email]]
+email: [null, [Validators.required, Validators.email]],
+rua: [null, Validators.required],
+cep: [null, Validators.required],
+numero:[null, Validators.required],
+complemento: [null],
+bairro: [null, Validators.required],
+cidade: [null, Validators.required],
+estado: [null, Validators.required],
 });
 
 
@@ -62,7 +69,7 @@ email: [null, [Validators.required, Validators.email]]
   }
 
 
-  aplicaCssErro(campo: any){
+  aplicaCssErro(campo: string){
   return {
       'has-error': this.verificaValidTouched(campo),
       'has-feedback':this.verificaValidTouched(campo)
