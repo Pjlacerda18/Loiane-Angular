@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import{HttpClient, HttpHandler} from '@angular/common/http';
 import { map } from 'rxjs/operators';
+import { ConsultaCepService } from '../shared/services/consulta-cep.service';
 
 @Component({
   selector: 'app-template-form',
@@ -22,7 +23,8 @@ this.http.post('https://httpbin.org/post', JSON.stringify(form.value)).pipe(map(
 form.form.reset()
 
 }
-  constructor(private http:HttpClient) { }
+  constructor(private http:HttpClient,
+  private cepService: ConsultaCepService) { }
 
 
 
@@ -46,23 +48,13 @@ aplicaCssErro(campo: { valid: any; touched: any; }){
 consultaCEP(cep: any, form: any){
   cep = cep.replace(/\D/g, '');
 
-  if (cep != ""){
+   if (cep !=null && cep !== ""){
+    this.cepService.consultaCEP(cep)?.subscribe(dados => this.populaDadosForm(dados, form));
 
-    var validaCep = /^[0-9]{8}$/;
-
-    if(validaCep.test(cep)) {
-
-      this.resetaDadosForm(form);
-
-     this.http.get(`//viacep.com.br/ws/${cep}/json`)
-     .pipe(map(dados => dados)).subscribe(dados => this.populaDadosForm(dados, form));
-  }
-
+}
 }
 
 
-
-}
 populaDadosForm(dados: any, formulario: any){
  /* formulario.setValue({
     nome: formulario.value.nome,
