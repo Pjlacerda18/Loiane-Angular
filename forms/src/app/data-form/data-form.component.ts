@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import {HttpClient} from '@angular/common/http';
-import { map } from 'rxjs';
+import { map, Observable } from 'rxjs';
 import { DropdownService } from './../shared/services/dropdown.service'
 import { EstadoBr } from '../shared/models/estado-br';
 import { ConsultaCepService } from '../shared/services/consulta-cep.service';
@@ -15,7 +15,8 @@ export class DataFormComponent implements OnInit {
 
   formulario: FormGroup | any;
   controle: any;
-  estados: EstadoBr[] | any;
+  estados: Observable<EstadoBr[]> | any;
+  cargos: [any] | any;
 
   constructor(
     private formBuilder: FormBuilder,
@@ -25,9 +26,12 @@ export class DataFormComponent implements OnInit {
     ) { }
 
   ngOnInit(): void {
+    this.estados = this.dropdownService.getEstadosBr();
 
-    this.dropdownService.getEstadosBr()
-    .subscribe(dados => this.estados = dados)
+    this.cargos = this.dropdownService.getCargos()
+
+   /* this.dropdownService.getEstadosBr()
+    .subscribe(dados => this.estados = dados) */
 
    /* this.formulario = new FormGroup({
       nome: new FormControl(null),
@@ -48,7 +52,9 @@ complemento: [null],
 bairro: [null, Validators.required],
 cidade: [null, Validators.required],
 estado: [null, Validators.required],
-})
+}),
+
+cargo: [null]
 
 
 });
@@ -152,6 +158,19 @@ resetaDadosForm(){
   }
   });
 
+
+
 }
+setarCargo(){
+  const cargo ={nome: 'Dev', nível: 'Júnior', desc: 'Dev Jr' };
+  this.formulario.get('cargo').setValue(cargo);
+}
+
+compararCargos(obj1: any , obj2: any ){
+  return obj1 && obj2 ? (obj1.nome === obj2.nome && obj1.nivel === obj2.nivel) :
+  obj1 && obj2;
+
+}
+
 }
 

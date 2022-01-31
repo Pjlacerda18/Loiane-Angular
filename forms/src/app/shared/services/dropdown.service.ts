@@ -14,4 +14,12 @@ getEstadosBr(){
 return this.http.get('assets/dados/estadosBr.json').pipe(map(response =>response));
 }
 
+getCargos(){
+  return [
+    {nome: 'Dev', nível: 'Júnior', desc: 'Dev Jr' },
+     {nome: 'Dev', nível: 'Júnior', desc: 'Dev Pl' },
+      {nome: 'Dev', nível: 'Júnior', desc: 'Dev Sr' }
+  ]
+}
+
 }
