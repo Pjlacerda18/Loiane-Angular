@@ -17,6 +17,7 @@ export class DataFormComponent implements OnInit {
   controle: any;
   estados: Observable<EstadoBr[]> | any;
   cargos: [any] | any;
+  tecnologias: any[] | any;
 
   constructor(
     private formBuilder: FormBuilder,
@@ -30,6 +31,7 @@ export class DataFormComponent implements OnInit {
 
     this.cargos = this.dropdownService.getCargos()
 
+this.tecnologias = this.dropdownService.getTecnologias()
    /* this.dropdownService.getEstadosBr()
     .subscribe(dados => this.estados = dados) */
 
@@ -54,7 +56,9 @@ cidade: [null, Validators.required],
 estado: [null, Validators.required],
 }),
 
-cargo: [null]
+cargo: [null],
+
+tecnologias: [null]
 
 
 });
@@ -171,6 +175,9 @@ compararCargos(obj1: any , obj2: any ){
   obj1 && obj2;
 
 }
+
+setarTecnologias() {
+  this.formulario.get('tecnologias').setvalue(['java', 'javascript', 'php'])}
 
 }
 

@@ -21,5 +21,14 @@ getCargos(){
       {nome: 'Dev', nível: 'Júnior', desc: 'Dev Sr' }
   ]
 }
+getTecnologias() {
+ return [
+   {nome:'java', desc:'Java'},
+   {nome:'javascript', desc:'JavaScript'},
+   {nome:'php', desc:'PHP'},
+   {nome:'java', desc:'Ruby'}
+
+]
+}
 
 }
