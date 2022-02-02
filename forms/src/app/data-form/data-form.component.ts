@@ -1,10 +1,11 @@
 import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
+import { FormArray, FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import {HttpClient} from '@angular/common/http';
 import { map, Observable } from 'rxjs';
 import { DropdownService } from './../shared/services/dropdown.service'
 import { EstadoBr } from '../shared/models/estado-br';
 import { ConsultaCepService } from '../shared/services/consulta-cep.service';
+import { FormValidations } from '../form-validations';
 
 @Component({
   selector: 'app-data-form',
@@ -18,6 +19,9 @@ export class DataFormComponent implements OnInit {
   estados: Observable<EstadoBr[]> | any;
   cargos: [any] | any;
   tecnologias: any[] | any;
+  newsletterOp: any[] | any;
+
+  frameworks = ['Angular', 'React', 'Vue', 'Sencha'];
 
   constructor(
     private formBuilder: FormBuilder,
@@ -29,9 +33,13 @@ export class DataFormComponent implements OnInit {
   ngOnInit(): void {
     this.estados = this.dropdownService.getEstadosBr();
 
-    this.cargos = this.dropdownService.getCargos()
+    this.cargos = this.dropdownService.getCargos();
 
-this.tecnologias = this.dropdownService.getTecnologias()
+this.tecnologias = this.dropdownService.getTecnologias();
+
+this.newsletterOp = this.dropdownService.getNewsletter()
+
+
    /* this.dropdownService.getEstadosBr()
     .subscribe(dados => this.estados = dados) */
 
@@ -44,11 +52,12 @@ this.tecnologias = this.dropdownService.getTecnologias()
 this.formulario = this.formBuilder.group({
 nome: [null, Validators.required],
 email: [null, [Validators.required, Validators.email]],
+confirmarEmail: [null, [FormValidations.equalsTO('')]],
 
 
 endereco: this.formBuilder.group({
   rua: [null, Validators.required],
-cep: [null, Validators.required],
+cep: [null,[ Validators.required, FormValidations.cepValidator]],
 numero:[null, Validators.required],
 complemento: [null],
 bairro: [null, Validators.required],
@@ -58,7 +67,12 @@ estado: [null, Validators.required],
 
 cargo: [null],
 
-tecnologias: [null]
+tecnologias: [null],
+
+newsletter: ['s'],
+
+termos:[null, Validators.pattern('true')],
+frameworks: this.buildFrameworks()
 
 
 });
@@ -66,11 +80,32 @@ tecnologias: [null]
 
   }
 
+  buildFrameworks() {
+    const values = this.frameworks.map(v =>  new FormControl(false));
+    return this.formBuilder.array(values, FormValidations.requiredMinCheckbox(1));
+
+    /*return [
+      new FormControl(false),
+      new FormControl(false),
+      new FormControl(false),
+      new FormControl(false)
+    ]*/
+
+  }
+
+
+
   onSubmit() {
     console.log(this.formulario);
+    let valueSubmit = Object.assign({}, this.formulario.value);
+
+valueSubmit = Object.assign(valueSubmit, {
+  frameworks: valueSubmit.frameworks.
+  map((v: any, i: any)=> v ? this.frameworks[i] : null).filter((v: any) => v !== null)
+});
 
     if(this.formulario.valid){
-       this.http.post('https://httpbin.org/post', JSON.stringify(this.formulario.value)).pipe(map(res => res)).subscribe(dados =>{
+       this.http.post('https://httpbin.org/post', JSON.stringify(valueSubmit)).subscribe(dados =>{
       console.log(dados);
       //reseta o form
       //this.resetar();
@@ -104,6 +139,12 @@ verificaValidacoesForm(formGroup: FormGroup){
    verificaValidTouched(campo: any){
     return !this.formulario.get(campo).valid && (this.formulario.get(campo).touched || this.formulario.get(campo).dirty)
 
+  }
+
+  verificaRequired(campo: string) {
+    return(
+      this.formulario.get(campo).hasError('required') && (this.formulario.get(campo).touched || this.formulario.get(campo).dirty)
+    )
   }
 
   verificaEmailInvalido(){
@@ -177,7 +218,11 @@ compararCargos(obj1: any , obj2: any ){
 }
 
 setarTecnologias() {
-  this.formulario.get('tecnologias').setvalue(['java', 'javascript', 'php'])}
+  this.formulario.get('tecnologias').setvalue(['java', 'javascript', 'php'])
+
+  }
+
+
 
 }
 
