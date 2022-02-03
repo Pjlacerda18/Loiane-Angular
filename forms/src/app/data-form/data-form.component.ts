@@ -1,11 +1,13 @@
+import {HttpClient} from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
 import { FormArray, FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
-import {HttpClient} from '@angular/common/http';
-import { map, Observable } from 'rxjs';
-import { DropdownService } from './../shared/services/dropdown.service'
 import { EstadoBr } from '../shared/models/estado-br';
+import { DropdownService } from './../shared/services/dropdown.service'
 import { ConsultaCepService } from '../shared/services/consulta-cep.service';
+import { empty, Observable } from 'rxjs';
 import { FormValidations } from '../form-validations';
+import { delay, distinctUntilChanged, map, switchMap, tap} from "rxjs/operators";
+import { VerificaEmailService } from './services/verifica-email.service';
 
 @Component({
   selector: 'app-data-form',
@@ -27,10 +29,15 @@ export class DataFormComponent implements OnInit {
     private formBuilder: FormBuilder,
     private http: HttpClient,
     private dropdownService: DropdownService,
-    private cepService: ConsultaCepService
+    private cepService: ConsultaCepService,
+    private verificaEmailService: VerificaEmailService
     ) { }
 
   ngOnInit(): void {
+
+
+//this.verificaEmailService.verficarEmail('').subscribe();
+
     this.estados = this.dropdownService.getEstadosBr();
 
     this.cargos = this.dropdownService.getCargos();
@@ -50,13 +57,13 @@ this.newsletterOp = this.dropdownService.getNewsletter()
     });*/
 
 this.formulario = this.formBuilder.group({
-nome: [null, Validators.required],
-email: [null, [Validators.required, Validators.email]],
-confirmarEmail: [null, [FormValidations.equalsTO('')]],
+nome: [null, [Validators.required, Validators.minLength(3)] ],
+email: [null, [Validators.required, Validators.email], [this.validarEmail.bind(this)]],
+confirmarEmail: [null, [FormValidations.equalsTo('email')]],
 
 
 endereco: this.formBuilder.group({
-  rua: [null, Validators.required],
+  rua: [null, [Validators.required]],
 cep: [null,[ Validators.required, FormValidations.cepValidator]],
 numero:[null, Validators.required],
 complemento: [null],
@@ -76,6 +83,16 @@ frameworks: this.buildFrameworks()
 
 
 });
+
+this.formulario.get('endereco.cep')
+.statusChanges
+.pipe(distinctUntilChanged(),
+tap(value => console.log('status CEP:',value)),
+switchMap(status => status === 'VALID' ?
+this.cepService.
+consultaCEP(this.formulario.get('endereco.cep').value) : empty())
+)
+.subscribe((dados: any) => dados ? this.populaDadosForm(dados) : {});
 
 
   }
@@ -148,7 +165,7 @@ verificaValidacoesForm(formGroup: FormGroup){
   }
 
   verificaEmailInvalido(){
-    let campoEmail = this.formulario.get('email');
+    const campoEmail = this.formulario.get('email');
     if (campoEmail.errors){
       return campoEmail.errors['email'] && campoEmail.touched;
     }
@@ -173,20 +190,19 @@ consultaCEP(){
 }
 
 
-populaDadosForm(dados: any){
- this.formulario.patchValue
+populaDadosForm(dados: any | any){
+ //this.formulario.patchValue()
 
-  this.formulario.form.patchValue({
-     endereco: {
-      rua: dados.logradouro,
-      //cep:dados.cep ,
-      numero:'',
-      compemento: dados.complemento,
-      bairro:dados.bairro,
-      cidade: dados.localidade,
-      estado: dados.uf
-  }
-  });
+  this.formulario.patchValue({
+      endereco: {
+        rua: dados.logradouro,
+        // cep: dados.cep,
+        complemento: dados.complemento,
+        bairro: dados.bairro,
+        cidade: dados.localidade,
+        estado: dados.uf
+      }
+    });
 
   this.formulario.get('nome').setValue('Pedro')
   }
@@ -222,7 +238,10 @@ setarTecnologias() {
 
   }
 
+validarEmail(formControl: FormControl) {
+    return this.verificaEmailService.verificarEmail(formControl.value).pipe(map(emailExiste => emailExiste ? { emailInvalido: true } : null));
 
+  }
 
 }
 

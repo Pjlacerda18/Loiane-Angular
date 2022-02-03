@@ -6,7 +6,7 @@
 
         <div class="col s12 ">
             <input type="text && checkbox" class="form-control" formControlName="nome" id="nome" placeholder="nome">
-            <app-campo-control-erro [mostrarErro]="verificaValidTouched('nome')" msgErro="Nome é obrigatório."></app-campo-control-erro>
+            <app-error-msg [control]="formulario.get('nome')" label="Nome"></app-error-msg>
         </div>
     </div>
     <div class="form-group">
@@ -14,8 +14,12 @@
         <div class="col-md-12" [ngClass]="aplicaCssErro('email')">
             <label for="email">Email</label>
             <input type="email" class="form-control" formControlName="email" id="email" placeholder="nome@email.com">
-            <app-campo-control-erro [mostrarErro]="verificaValidTouched('email')" msgErro="Email é obrigatório."></app-campo-control-erro>
+            <app-campo-control-erro [mostrarErro]="verificaValidTouched('email')" msgErro="Email é obrigatório.">
+            </app-campo-control-erro>
             <app-campo-control-erro [mostrarErro]="verificaEmailInvalido()" msgErro="Email inválido."></app-campo-control-erro>
+            <app-campo-control-erro [mostrarErro]="formulario.get('email').status === 'PENDING'" msgErro="Validando email..."></app-campo-control-erro>
+            <app-campo-control-erro [mostrarErro]="formulario.get('email').status === 'VALID'" msgErro="Email válido!"></app-campo-control-erro>
+            <app-campo-control-erro [mostrarErro]="formulario.get('email').hasError('emailInvalido')" msgErro="Email já cadastrado!"></app-campo-control-erro>
 
         </div>
     </div>
@@ -130,10 +134,10 @@
 
             <div class="row" [ngClass]="aplicaCssErro('frameworks')">
                 <label for="frameworks">Frameworks</label>
-                <div id="frameworks" class="checkbox row">
-                    <div class="row" formArrayName="frameworks" *ngFor="let item of formulario.get('frameworks').controls; let i = index">
-                        <label for="frameworks">
-                      <input class="filled-in "id="frameworks"type="checkbox" checked="checked" formControlName="frameworks" [formControlName]="i"> <span>{{ frameworks[i] }}</span>
+                <div id="frameworks" class="checkbox">
+                    <div class="checkbox" formArrayName="frameworks" *ngFor="let item of formulario.get('frameworks').controls; let i = index">
+                        <label class="checkbox">
+                      <input type="checkbox" checked="checked" [formControlName]="i"> <span>{{ frameworks[i] }}</span>
                     </label>
                     </div>
                     <app-campo-control-erro [mostrarErro]="!formulario.get('frameworks').valid" msgErro="Selecione uma opção"></app-campo-control-erro>
@@ -142,7 +146,7 @@
 
         </div>
 
-        <button type="submit" class="btn btn-primary">Submit</button>
+        <button type="submit" class="btn">Submit</button>
 
         <button class="btn-default" (click)="resetar()">Cancelar</button>
 

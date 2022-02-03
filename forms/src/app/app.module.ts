@@ -7,6 +7,7 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
+import { VerificaEmailService } from './data-form/services/verifica-email.service';
 
 
 
@@ -34,7 +35,7 @@ import { AppComponent } from './app.component';
 
 
   ],
-  providers: [],
+  providers: [VerificaEmailService],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

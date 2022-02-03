@@ -1,13 +1,13 @@
 import { TestBed } from '@angular/core/testing';
 import { HttpClient } from '@angular/common/http';
-import { ConsultaCepService } from './consulta-cep.service';
+import { VerificaEmailService } from './verifica-email.service';
 
-describe('ConsultaCepService', () => {
-  let service: ConsultaCepService;
+describe('VerificaEmailService', () => {
+  let service: VerificaEmailService;
 
   beforeEach(() => {
     TestBed.configureTestingModule({});
-    service = TestBed.inject(ConsultaCepService);
+    service = TestBed.inject(VerificaEmailService);
   });
 
   it('should be created', () => {
