@@ -8,17 +8,22 @@ import { empty, Observable } from 'rxjs';
 import { FormValidations } from '../form-validations';
 import { delay, distinctUntilChanged, map, switchMap, tap} from "rxjs/operators";
 import { VerificaEmailService } from './services/verifica-email.service';
+import { BaseFormComponent } from '../shared/base-form/base-form.component';
+import { Cidade } from '../shared/models/cidade';
 
 @Component({
   selector: 'app-data-form',
   templateUrl: './data-form.component.html',
   styleUrls: ['./data-form.component.css']
 })
-export class DataFormComponent implements OnInit {
+export class DataFormComponent extends BaseFormComponent implements OnInit {
 
-  formulario: FormGroup | any;
-  controle: any;
-  estados: Observable<EstadoBr[]> | any;
+
+  //formulario: FormGroup | any;
+  estados:EstadoBr | any;
+  cidades:Cidade[] | any ;
+
+  //estados: Observable<EstadoBr[]> | any;
   cargos: [any] | any;
   tecnologias: any[] | any;
   newsletterOp: any[] | any;
@@ -31,14 +36,18 @@ export class DataFormComponent implements OnInit {
     private dropdownService: DropdownService,
     private cepService: ConsultaCepService,
     private verificaEmailService: VerificaEmailService
-    ) { }
+    ) {
+      super();
+    }
 
-  ngOnInit(): void {
+  override ngOnInit(): void {
 
 
 //this.verificaEmailService.verficarEmail('').subscribe();
 
-    this.estados = this.dropdownService.getEstadosBr();
+    //this.estados = this.dropdownService.getEstadosBr();
+
+    this.dropdownService.getEstadosBr().subscribe(dados => this.estados = dados);
 
     this.cargos = this.dropdownService.getCargos();
 
@@ -94,6 +103,16 @@ consultaCEP(this.formulario.get('endereco.cep').value) : empty())
 )
 .subscribe((dados: any) => dados ? this.populaDadosForm(dados) : {});
 
+ this.formulario.get('endereco.estado').valueChanges
+        .pipe(
+          tap(estado => console.log('Novo estado: ', estado)),
+          map(estado => this.estados.filter((e: { sigla: unknown; }) => e.sigla === estado)),
+          map((estados: any) => estados && estados.length > 0 ? estados[0].id : empty()),
+          switchMap((estadoId: number) => this.dropdownService.getCidades(estadoId)),
+          tap(console.log)
+        )
+        .subscribe((cidades: any) => this.cidades = cidades);
+
 
   }
 
@@ -110,18 +129,16 @@ consultaCEP(this.formulario.get('endereco.cep').value) : empty())
 
   }
 
-
-
-  onSubmit() {
-    console.log(this.formulario);
-    let valueSubmit = Object.assign({}, this.formulario.value);
+submit() {
+     let valueSubmit = Object.assign({}, this.formulario.value);
 
 valueSubmit = Object.assign(valueSubmit, {
   frameworks: valueSubmit.frameworks.
   map((v: any, i: any)=> v ? this.frameworks[i] : null).filter((v: any) => v !== null)
 });
 
-    if(this.formulario.valid){
+
+console.log(valueSubmit)
        this.http.post('https://httpbin.org/post', JSON.stringify(valueSubmit)).subscribe(dados =>{
       console.log(dados);
       //reseta o form
@@ -129,56 +146,8 @@ valueSubmit = Object.assign(valueSubmit, {
       },
       (error: any) => alert('erro'))
 
-  } else {
-    console.log('formulario invalido');
-    this.verificaValidacoesForm(this.formulario);
-
-  };
-  }
-
-
-verificaValidacoesForm(formGroup: FormGroup){
-   Object.keys(formGroup.controls).forEach(campo =>{
-    console.log(campo);
-    const controle = formGroup.get(campo);
-    this.controle.markAsDirty();
-    if (controle instanceof FormGroup){
-      this.verificaValidacoesForm(controle);
-    }
-   });
-}
-
-
-  resetar() {
-    this.formulario.reset()
-  }
-
-   verificaValidTouched(campo: any){
-    return !this.formulario.get(campo).valid && (this.formulario.get(campo).touched || this.formulario.get(campo).dirty)
 
   }
-
-  verificaRequired(campo: string) {
-    return(
-      this.formulario.get(campo).hasError('required') && (this.formulario.get(campo).touched || this.formulario.get(campo).dirty)
-    )
-  }
-
-  verificaEmailInvalido(){
-    const campoEmail = this.formulario.get('email');
-    if (campoEmail.errors){
-      return campoEmail.errors['email'] && campoEmail.touched;
-    }
-  }
-
-
-  aplicaCssErro(campo: string){
-  return {
-      'has-error': this.verificaValidTouched(campo),
-      'has-feedback':this.verificaValidTouched(campo)
-    }
-}
-
 
 consultaCEP(){
   const cep = this.formulario.get('endereco.cep').value;
@@ -239,7 +208,7 @@ setarTecnologias() {
   }
 
 validarEmail(formControl: FormControl) {
-    return this.verificaEmailService.verificarEmail(formControl.value).pipe(map(emailExiste => emailExiste ? { emailInvalido: true } : null));
+    return this.verificaEmailService.verificarEmail(formControl.value).pipe(delay(3000),(map(emailExiste => emailExiste ? { emailInvalido: true } : null)));
 
   }
 

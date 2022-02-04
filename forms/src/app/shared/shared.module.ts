@@ -7,6 +7,8 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { DropdownService } from './services/dropdown.service';
 import { ConsultaCepService } from './services/consulta-cep.service';
 import { ErrorMsgComponent } from './error-msg/error-msg.component';
+import { InputFieldComponent } from './input-field/input-field.component';
+import { BaseFormComponent } from './base-form/base-form.component';
 
 
 
@@ -14,7 +16,9 @@ import { ErrorMsgComponent } from './error-msg/error-msg.component';
   declarations: [
     FormDebugComponent,
     CampoControlErrorComponent,
-    ErrorMsgComponent
+    ErrorMsgComponent,
+    InputFieldComponent,
+    
   ],
   imports: [
     CommonModule,
@@ -25,7 +29,9 @@ import { ErrorMsgComponent } from './error-msg/error-msg.component';
   exports: [
     FormDebugComponent,
     CampoControlErrorComponent,
-    ErrorMsgComponent
+    ErrorMsgComponent,
+    InputFieldComponent,
+
   ],
   providers: [ DropdownService,
   ConsultaCepService]

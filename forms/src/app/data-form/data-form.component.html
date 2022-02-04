@@ -1,14 +1,15 @@
 <form class="form-horizontal" [formGroup]="formulario" (ngSubmit)="onSubmit()">
-    <div class="form-group" [ngClass]="aplicaCssErro('nome')">
+
+    <app-input-field class="col-md-12" [classeCss]="aplicaCssErro('nome')" id="nome" label="nome" [control]="formulario.get('nome')"></app-input-field>
 
 
+    <!--div class="form-group" [ngClass]="aplicaCssErro('nome')">
         <div class="col-md-12"><label for="nome">Nome</label></div>
-
         <div class="col s12 ">
             <input type="text && checkbox" class="form-control" formControlName="nome" id="nome" placeholder="nome">
             <app-error-msg [control]="formulario.get('nome')" label="Nome"></app-error-msg>
         </div>
-    </div>
+    </!--div-->
     <div class="form-group">
 
         <div class="col-md-12" [ngClass]="aplicaCssErro('email')">
@@ -72,15 +73,16 @@
                 <app-campo-control-erro [mostrarErro]="verificaValidTouched('endereco.bairro')" msgErro="Bairro é obrigatório."></app-campo-control-erro>
             </div>
 
-            <div class="row col-md-4" [ngClass]="aplicaCssErro('endereco.cidade')">
-                <label for="cidade" class="control-label">Cidade</label>
-                <input type="cidade" class="form-control" id="cidade" formControlName="cidade">
-                <app-campo-control-erro [mostrarErro]="verificaValidTouched('endereco.cidade')" msgErro="Cidade é obrigatório."></app-campo-control-erro>
+            <div class="row col-md-3" [ngClass]="aplicaCssErro('endereco.cidade')">
+                <label for="cidade" class="control-label">Cidade</label> <select type="cidade" class="form-control" id="cidade" formControlName="cidade">
+                  <option *ngFor="let cidade of cidades" [value]="cidade.nome">{{ cidade.nome }}</option>
+                </select>
+                <app-campo-control-erro [mostrarErro]="verificaValidTouched('endereco.cidade')" msgErro="Cidade é obrigatória."></app-campo-control-erro>
             </div>
 
             <div class="row col-md-3" [ngClass]="aplicaCssErro('endereco.estado')">
                 <label for="estado" class="control-label">Estado</label> <select type="estado" class="form-control" id="estado" formControlName="estado">
-                  <option *ngFor="let estado of estados | async" [value]="estado.sigla">{{ estado.nome }}</option>
+                  <option *ngFor="let estado of estados" [value]="estado.sigla">{{ estado.nome }}</option>
                 </select>
                 <app-campo-control-erro [mostrarErro]="verificaValidTouched('endereco.estado')" msgErro="Estado é obrigatório."></app-campo-control-erro>
             </div>
