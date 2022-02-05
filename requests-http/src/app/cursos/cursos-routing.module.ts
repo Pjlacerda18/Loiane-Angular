@@ -1,9 +1,11 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
-import { CursosListaComponent } from './cursos-lista/cursos-lista.component';
+
 
 const routes: Routes = [
-  { path: '', component: CursosListaComponent}
+  { path: '', pathMatch: 'full', redirectTo: 'cursos'},
+   {path: 'cursos',
+    loadChildren: () => import('./cursos.module').then(m => m.CursosModule)}
 ];
 
 @NgModule({

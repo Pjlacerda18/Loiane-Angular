@@ -1,3 +1,4 @@
+import { HttpClientModule } from '@angular/common/http';
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 
@@ -12,7 +13,9 @@ import { BrowserModule } from '@angular/platform-browser';
   imports: [
     CommonModule,
     CursosRoutingModule,
-    BrowserModule
+    BrowserModule,
+    NgModule,
+    HttpClientModule
   ]
 })
 export class CursosModule { }
