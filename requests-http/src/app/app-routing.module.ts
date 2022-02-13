@@ -1,20 +1,42 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
-import { CursosListaComponent } from './cursos/cursos-lista/cursos-lista.component';
 
 const routes: Routes = [
-  { path: '', pathMatch: 'full', redirectTo:'cursos'},
-  { path: 'cursos', component: CursosListaComponent},
-  { path: 'rxjs-poc',
-    loadChildren: () => import('./unsubscribe-rxjs/unsubscribe-rxjs.module').then(m => m.UnsubscribeRxjsModule)}
+  { path: '', pathMatch: 'full', redirectTo: 'busca-reativa' },
+   {
+    path: 'cursos',
+    loadChildren:() => import ('./cursos/cursos.module').then((m) => m.CursosModule)
+  },
+
+  {
+    path: 'rxjs-poc',
+    loadChildren: () =>
+      import('./unsubscribe-rxjs/unsubscribe-rxjs.module').then(
+        (m) => m.UnsubscribeRxjsModule
+      ),
+  },
+  {
+    path: 'upload',
+    loadChildren: () => import('./upload-file/upload-file.module').then((m) => m.UploadFileModule)
+  },
+    { path: 'busca-reativa',
+    loadChildren: () => import('./reactive-search/reactive-search.module').then((m) => m.ReactiveSearchModule)
+  },
+
 ];
 
 @NgModule({
   imports: [RouterModule.forRoot(routes)],
-  exports: [RouterModule]
+  exports: [RouterModule],
 })
-export class AppRoutingModule { }
-function mod(mod: any, arg1: (any: any) => any): import("@angular/core").Type<any> | import("@angular/core").NgModuleFactory<any> | import("rxjs").Observable<import("@angular/core").Type<any>> | Promise<any> {
+export class AppRoutingModule {}
+function mod(
+  mod: any,
+  arg1: (any: any) => any
+):
+  | import('@angular/core').Type<any>
+  | import('@angular/core').NgModuleFactory<any>
+  | import('rxjs').Observable<import('@angular/core').Type<any>>
+  | Promise<any> {
   throw new Error('Function not implemented.');
 }
-

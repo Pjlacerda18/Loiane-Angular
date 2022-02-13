@@ -5,26 +5,25 @@ import { ModalModule } from 'ngx-bootstrap/modal';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { HttpClientModule } from '@angular/common/http';
-import { CommonModule } from '@angular/common';
-import { CursosListaComponent } from './cursos/cursos-lista/cursos-lista.component';
-import { CursosService } from './cursos/cursos.service';
 import { SharedModule } from './shared/shared.module';
+import { CommonModule } from '@angular/common';
+import { ReactiveFormsModule } from '@angular/forms';
+import { CursosService } from './cursos/cursos.service';
+import { CursosModule } from './cursos/cursos.module';
 
 @NgModule({
   declarations: [
-    AppComponent,
-    CursosListaComponent,
-
+    AppComponent
   ],
   imports: [
     BrowserModule,
     AppRoutingModule,
     HttpClientModule,
-    CommonModule,
     ModalModule.forRoot(),
-    SharedModule
-
-
+    SharedModule,
+    CommonModule,
+    ReactiveFormsModule,
+    CursosModule
   ],
   providers: [ CursosService],
   bootstrap: [AppComponent]

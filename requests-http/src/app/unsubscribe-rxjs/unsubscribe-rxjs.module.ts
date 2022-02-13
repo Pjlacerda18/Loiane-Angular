@@ -22,7 +22,8 @@ import { PocBaseComponent } from './poc-base/poc-base/poc-base.component';
     PocTakeUntilComponent,
     PocTakeComponent,
     PocUnsubComponent,
-    PocBaseComponent
+    PocBaseComponent,
+    
   ]
 })
 export class UnsubscribeRxjsModule {}
